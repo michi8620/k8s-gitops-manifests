@@ -53,6 +53,7 @@ ArgoCD manages itself, all infrastructure, and all application workloads across 
 
 ## Directory Structure
 
+
 ```
 ├── bootstrap/                          # One-time bootstrap resources
 │   └── install.sh                      # Script to install ArgoCD + root app
