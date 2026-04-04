@@ -24,7 +24,7 @@ echo "============================================"
 
 # --- Step 1: Create namespace ---
 echo "==> Creating namespace '${NAMESPACE}'"
-kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+k create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
 
 # --- Step 2: Install ArgoCD via Helm (initial bootstrap only) ---
 echo "==> Adding Helm repo and installing ArgoCD"
