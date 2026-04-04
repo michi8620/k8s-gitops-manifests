@@ -22,6 +22,8 @@ echo "  Revision:    ${TARGET_REVISION}"
 echo "  Environment: ${ENVIRONMENT}"
 echo "============================================"
 
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
 # --- Step 1: Create namespace ---
 echo "==> Creating namespace '${NAMESPACE}'"
 k3s kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | k3s kubectl apply -f -
