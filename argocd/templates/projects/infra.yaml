@@ -15,8 +15,6 @@ spec:
     - {{ .Values.global.repoURL | quote }}
 
   destinations:
-    - namespace: ingress-nginx
-      server: '*'
     - namespace: cert-manager
       server: '*'
     - namespace: monitoring

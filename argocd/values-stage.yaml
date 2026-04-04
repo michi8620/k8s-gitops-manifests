@@ -3,7 +3,7 @@ argo-cd:
     replicas: 2
     ingress:
       enabled: true
-      ingressClassName: nginx
+      ingressClassName: traefik
       hostname: argocd.stage.example.com
       tls: true
 

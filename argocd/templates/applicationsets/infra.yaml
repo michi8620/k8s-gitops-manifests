@@ -62,7 +62,7 @@ spec:
             duration: 5s
             factor: 2
             maxDuration: 3m
-      ## Known fields mutated by webhooks / controllers
+      ## Known fields mutated by controllers (e.g. cert-manager webhooks)
       ignoreDifferences:
         - group: admissionregistration.k8s.io
           kind: MutatingWebhookConfiguration
