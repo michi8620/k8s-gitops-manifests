@@ -1,0 +1,6 @@
+external-secrets:
+  installCRDs: true
+  serviceMonitor:
+    enabled: true
+  webhook:
+    port: 9443

@@ -1,0 +1,29 @@
+backend-api:
+  image:
+    tag: "stage-latest"
+
+  replicaCount: 2
+
+  ingress:
+    hosts:
+      - host: api.stage.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: api-stage-tls
+        hosts:
+          - api.stage.example.com
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+  env:
+    - name: LOG_LEVEL
+      value: info
+    - name: DB_HOST
+      value: postgres.stage.internal

@@ -1,0 +1,18 @@
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      ## Discover all ServiceMonitors/PodMonitors regardless of labels
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      retention: 15d
+
+  grafana:
+    enabled: true
+    sidecar:
+      dashboards:
+        enabled: true
+        searchNamespace: ALL
+
+  alertmanager:
+    enabled: true

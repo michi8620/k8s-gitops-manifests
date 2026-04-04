@@ -1,0 +1,9 @@
+apiVersion: v2
+name: frontend
+description: Frontend web application - GitOps wrapper chart
+type: application
+version: 1.0.0
+dependencies:
+  - name: frontend
+    version: "0.1.0"
+    repository: "oci://ghcr.io/OWNER/helm-charts"

@@ -1,0 +1,43 @@
+backend-api:
+  image:
+    tag: "2.1.0"                                 # Pinned version in prod
+
+  replicaCount: 3
+
+  ingress:
+    hosts:
+      - host: api.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: api-prod-tls
+        hosts:
+          - api.example.com
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      memory: 1Gi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+
+  podDisruptionBudget:
+    minAvailable: 2
+
+  env:
+    - name: LOG_LEVEL
+      value: warn
+    - name: DB_HOST
+      value: postgres.prod.internal

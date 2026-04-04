@@ -1,0 +1,34 @@
+frontend:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/OWNER/frontend
+    tag: "latest"                                # Overridden per environment
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: http
+
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: http

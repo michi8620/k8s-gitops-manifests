@@ -1,0 +1,10 @@
+cert-manager:
+  replicaCount: 1
+  webhook:
+    replicaCount: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 128Mi

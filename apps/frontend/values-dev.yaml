@@ -1,0 +1,23 @@
+frontend:
+  image:
+    tag: "dev-latest"
+
+  replicaCount: 1
+
+  ingress:
+    hosts:
+      - host: frontend.dev.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: frontend-dev-tls
+        hosts:
+          - frontend.dev.example.com
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 128Mi

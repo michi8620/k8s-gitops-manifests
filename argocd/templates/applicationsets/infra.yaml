@@ -1,0 +1,74 @@
+{{- $repoURL := .Values.global.repoURL -}}
+##
+## Infrastructure ApplicationSet
+## Uses a matrix generator to cross every directory under infra/ with each
+## environment, producing one ArgoCD Application per (component × environment).
+##
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infra
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          ## Discovers directories: infra/ingress-nginx, infra/cert-manager, etc.
+          - git:
+              repoURL: {{ $repoURL }}
+              revision: HEAD
+              directories:
+                - path: infra/*
+          ## One entry per target environment / cluster
+          - list:
+              elements:
+{{ toYaml .Values.environments | indent 16 }}
+  template:
+    metadata:
+      name: '{{`{{.path.basename}}-{{.env}}`}}'
+      labels:
+        app.kubernetes.io/part-of: infra
+        environment: '{{`{{.env}}`}}'
+      annotations:
+        argocd.argoproj.io/manifest-generate-paths: '{{`{{.path.path}}`}}'
+    spec:
+      project: infra
+      source:
+        repoURL: {{ $repoURL }}
+        targetRevision: '{{`{{.revision}}`}}'
+        path: '{{`{{.path.path}}`}}'
+        helm:
+          valueFiles:
+            - values.yaml
+            - 'values-{{`{{.env}}`}}.yaml'
+      destination:
+        server: '{{`{{.cluster}}`}}'
+        namespace: '{{`{{.path.basename}}`}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - PrunePropagationPolicy=foreground
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+      ## Known fields mutated by webhooks / controllers
+      ignoreDifferences:
+        - group: admissionregistration.k8s.io
+          kind: MutatingWebhookConfiguration
+          jsonPointers:
+            - /webhooks/0/clientConfig/caBundle
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          jsonPointers:
+            - /webhooks/0/clientConfig/caBundle

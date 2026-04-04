@@ -1,0 +1,65 @@
+{{- $repoURL := .Values.global.repoURL -}}
+##
+## Applications ApplicationSet
+## Uses a matrix generator to cross every directory under apps/ with each
+## environment, producing one ArgoCD Application per (app × environment).
+##
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          ## Discovers directories: apps/frontend, apps/backend-api, etc.
+          - git:
+              repoURL: {{ $repoURL }}
+              revision: HEAD
+              directories:
+                - path: apps/*
+          ## One entry per target environment / cluster
+          - list:
+              elements:
+{{ toYaml .Values.environments | indent 16 }}
+  template:
+    metadata:
+      name: '{{`{{.path.basename}}-{{.env}}`}}'
+      labels:
+        app.kubernetes.io/part-of: apps
+        environment: '{{`{{.env}}`}}'
+      annotations:
+        argocd.argoproj.io/manifest-generate-paths: '{{`{{.path.path}}`}}'
+        ## Link to external notifications / dashboards
+        notifications.argoproj.io/subscribe.on-sync-succeeded.slack: deployments
+    spec:
+      project: apps
+      source:
+        repoURL: {{ $repoURL }}
+        targetRevision: '{{`{{.revision}}`}}'
+        path: '{{`{{.path.path}}`}}'
+        helm:
+          valueFiles:
+            - values.yaml
+            - 'values-{{`{{.env}}`}}.yaml'
+      destination:
+        server: '{{`{{.cluster}}`}}'
+        namespace: '{{`{{.path.basename}}`}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+        retry:
+          limit: 3
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 1m

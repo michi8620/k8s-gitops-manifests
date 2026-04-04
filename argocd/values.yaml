@@ -1,0 +1,113 @@
+## ---------------------------------------------------------------------------
+## Global settings used by custom templates (projects, applicationsets)
+## ---------------------------------------------------------------------------
+global:
+  repoURL: https://github.com/michi8620/k8s-gitops-manifests.git
+
+## Environment definitions consumed by ApplicationSet templates.
+## Each entry generates one Application per discovered component (infra/*, apps/*).
+environments:
+  - env: dev
+    cluster: https://kubernetes.default.svc    # In-cluster (ArgoCD's cluster)
+    revision: HEAD
+  - env: stage
+    cluster: https://stage.k8s.example.com
+    revision: HEAD
+  - env: prod
+    cluster: https://prod.k8s.example.com
+    revision: main                              # Prod tracks stable branch
+
+## ---------------------------------------------------------------------------
+## ArgoCD Helm chart values (upstream chart key: argo-cd)
+## ---------------------------------------------------------------------------
+argo-cd:
+  global:
+    logging:
+      format: json
+      level: info
+
+  ## --- Server ---
+  server:
+    extraArgs:
+      - --insecure                              # TLS terminated at ingress level
+    ingress:
+      enabled: false                            # Overridden per environment
+
+  ## --- Application Controller ---
+  controller:
+    metrics:
+      enabled: true
+
+  ## --- Repo Server ---
+  repoServer:
+    metrics:
+      enabled: true
+
+  ## --- ApplicationSet Controller ---
+  applicationSet:
+    metrics:
+      enabled: true
+
+  ## --- Notifications ---
+  notifications:
+    enabled: true
+
+  ## --- Dex (SSO) ---
+  dex:
+    enabled: false                              # Enable when configuring OIDC
+
+  ## --- Redis ---
+  redis-ha:
+    enabled: false                              # Enable for HA in production
+
+  ## --- Config ---
+  configs:
+    params:
+      # Number of concurrent goroutines that process application status updates (diffing live vs desired state).
+      # Increase if you have many apps and status refresh feels slow. Default: 20.
+      controller.status.processors: 20
+
+      # Number of concurrent goroutines that handle actual sync operations (applying manifests to the cluster).
+      # Kept lower than status processors intentionally — syncs are heavier and riskier to parallelize. Default: 10.
+      controller.operation.processors: 10
+
+      # How often ArgoCD polls Git for changes when no webhook event is received.
+      # Acts as a fallback reconciliation safety net. Default: 180s.
+      timeout.reconciliation: 180s
+
+    cm:
+      # Enables SVG status badge endpoints (e.g. /api/badge?name=my-app).
+      # Useful for embedding sync/health status into READMEs or internal dashboards.
+      statusbadge.enabled: "true"
+
+      # Determines how ArgoCD marks cluster resources as belonging to an Application.
+      # "annotation" is the modern recommended method — uses argocd.argoproj.io/tracking-id annotation
+      # instead of a label, avoiding conflicts with label selectors used by other tools.
+      application.resourceTrackingMethod: annotation
+
+    rbac:
+      # Default role assigned to any authenticated user who doesn't match a specific rule.
+      # "role:readonly" means they can view everything but cannot make any changes.
+      policy.default: role:readonly
+
+      policy.csv: |
+        # Allow role:devops to perform any action on any application in any project.
+        # Format: p, <role>, <resource>, <action>, <scope>, <effect>
+        # Action "*" covers sync, create, update, delete, override, etc.
+        p, role:devops, applications, *, */*, allow
+
+        # Allow role:devops to read cluster info (but NOT register or delete clusters).
+        # Cluster credentials management stays admin-only.
+        p, role:devops, clusters, get, *, allow
+
+        # Allow role:devops full access to repositories — add, update, delete Git/Helm repo connections.
+        p, role:devops, repositories, *, *, allow
+
+        # Allow role:devops to view AppProjects but NOT create or modify them.
+        # Project lifecycle management stays admin-only.
+        p, role:devops, projects, get, *, allow
+
+        # Bind the SSO/OIDC group "devops-team" to role:devops.
+        # Anyone in that IdP group inherits all the permissions defined above.
+        # Format: g, <group>, <role>
+        g, devops-team, role:devops

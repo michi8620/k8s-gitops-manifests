@@ -1,0 +1,21 @@
+argo-cd:
+  server:
+    replicas: 2
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hostname: argocd.stage.example.com
+      tls: true
+
+  controller:
+    replicas: 1
+
+  repoServer:
+    replicas: 2
+
+  redis-ha:
+    enabled: false
+
+  configs:
+    params:
+      timeout.reconciliation: 120s

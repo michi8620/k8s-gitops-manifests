@@ -1,0 +1,9 @@
+apiVersion: v2
+name: backend-api
+description: Backend API service - GitOps wrapper chart
+type: application
+version: 1.0.0
+dependencies:
+  - name: backend-api
+    version: "0.1.0"
+    repository: "oci://ghcr.io/OWNER/helm-charts"

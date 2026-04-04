@@ -1,0 +1,38 @@
+{{- $ns := .Release.Namespace -}}
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infra
+  namespace: {{ $ns }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Infrastructure components (ingress, certs, monitoring, secrets)
+
+  sourceRepos:
+    - {{ .Values.global.repoURL | quote }}
+
+  destinations:
+    - namespace: ingress-nginx
+      server: '*'
+    - namespace: cert-manager
+      server: '*'
+    - namespace: monitoring
+      server: '*'
+    - namespace: external-secrets
+      server: '*'
+    - namespace: kube-system
+      server: '*'
+
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  orphanedResources:
+    warn: true

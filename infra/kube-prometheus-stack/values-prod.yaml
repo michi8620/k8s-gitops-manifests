@@ -1,0 +1,38 @@
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      retention: 30d
+      replicas: 2
+      resources:
+        requests:
+          cpu: 1
+          memory: 4Gi
+        limits:
+          memory: 8Gi
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: gp3
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 200Gi
+
+  grafana:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        memory: 1Gi
+
+  alertmanager:
+    alertmanagerSpec:
+      replicas: 2
+      resources:
+        requests:
+          cpu: 200m
+          memory: 256Mi
+        limits:
+          memory: 512Mi

@@ -1,0 +1,36 @@
+{{- $ns := .Release.Namespace -}}
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: apps
+  namespace: {{ $ns }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Application workloads (frontend, backend, etc.)
+
+  sourceRepos:
+    - {{ .Values.global.repoURL | quote }}
+    - 'oci://ghcr.io/OWNER/helm-charts'
+
+  destinations:
+    - namespace: 'frontend'
+      server: '*'
+    - namespace: 'backend-api'
+      server: '*'
+    - namespace: 'default'
+      server: '*'
+
+  ## Apps can only create namespaced resources + Namespaces themselves
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  orphanedResources:
+    warn: true
