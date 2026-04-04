@@ -42,7 +42,7 @@ kubectl -n "${NAMESPACE}" rollout status deployment/argocd-server --timeout=120s
 
 # --- Step 4: Apply the Root Application (app-of-apps) ---
 echo "==> Applying root application (ArgoCD will now manage itself)"
-kubectl apply -f - <<EOF
+k apply -f - <<EOF
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -91,7 +91,7 @@ echo "  2. Create AppProjects and ApplicationSets"
 echo "  3. Auto-discover and deploy infra/ and apps/ components"
 echo ""
 echo "Access the ArgoCD UI:"
-echo "  kubectl port-forward svc/argocd-server -n ${NAMESPACE} 8080:443"
+echo "  k port-forward svc/argocd-server -n ${NAMESPACE} 8080:443"
 echo ""
 echo "Get the initial admin password:"
-echo "  kubectl -n ${NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d && echo"
+echo "  k -n ${NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d && echo"
