@@ -72,7 +72,6 @@ ArgoCD manages itself, all infrastructure, and all application workloads across 
 │           └── apps.yaml               # Auto-discovers apps/* directories
 │
 ├── infra/                              # Infrastructure components
-│   ├── ingress-nginx/                  # NGINX Ingress Controller
 │   ├── cert-manager/                   # TLS certificate management
 │   ├── kube-prometheus-stack/          # Monitoring (Prometheus + Grafana)
 │   └── external-secrets/              # Secret management from cloud providers

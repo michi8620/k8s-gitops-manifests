@@ -17,7 +17,7 @@ spec:
   generators:
     - matrix:
         generators:
-          ## Discovers directories: infra/ingress-nginx, infra/cert-manager, etc.
+          ## Discovers directories: infra/cert-manager, infra/external-secrets, etc.
           - git:
               repoURL: {{ $repoURL }}
               revision: HEAD
