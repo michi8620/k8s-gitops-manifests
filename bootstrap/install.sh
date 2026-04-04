@@ -24,7 +24,7 @@ echo "============================================"
 
 # --- Step 1: Create namespace ---
 echo "==> Creating namespace '${NAMESPACE}'"
-k create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+k3s kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | k3s kubectl apply -f -
 
 # --- Step 2: Install ArgoCD via Helm (initial bootstrap only) ---
 echo "==> Adding Helm repo and installing ArgoCD"
@@ -38,11 +38,11 @@ helm upgrade --install argocd argo/argo-cd \
 
 # --- Step 3: Wait for ArgoCD to be ready ---
 echo "==> Waiting for ArgoCD server to be ready"
-kubectl -n "${NAMESPACE}" rollout status deployment/argocd-server --timeout=120s
+k3s kubectl -n "${NAMESPACE}" rollout status deployment/argocd-server --timeout=120s
 
 # --- Step 4: Apply the Root Application (app-of-apps) ---
 echo "==> Applying root application (ArgoCD will now manage itself)"
-k apply -f - <<EOF
+k3s kubectl apply -f - <<EOF
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -91,7 +91,7 @@ echo "  2. Create AppProjects and ApplicationSets"
 echo "  3. Auto-discover and deploy infra/ and apps/ components"
 echo ""
 echo "Access the ArgoCD UI:"
-echo "  k port-forward svc/argocd-server -n ${NAMESPACE} 8080:443"
+echo "  k3s kubectl port-forward svc/argocd-server -n ${NAMESPACE} 8080:443"
 echo ""
 echo "Get the initial admin password:"
-echo "  k -n ${NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d && echo"
+echo "  k3s kubectl -n ${NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d && echo"
