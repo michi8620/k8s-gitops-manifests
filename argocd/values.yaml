@@ -28,8 +28,6 @@ argo-cd:
 
   ## --- Server ---
   server:
-    extraArgs:
-      - --insecure                              # TLS terminated at ingress level
     ingress:
       enabled: false                            # Overridden per environment
 
@@ -63,6 +61,9 @@ argo-cd:
   ## --- Config ---
   configs:
     params:
+      # TLS terminated at ingress level
+      server.insecure: true
+
       # Number of concurrent goroutines that process application status updates (diffing live vs desired state).
       # Increase if you have many apps and status refresh feels slow. Default: 20.
       controller.status.processors: 20
@@ -71,9 +72,9 @@ argo-cd:
       # Kept lower than status processors intentionally — syncs are heavier and riskier to parallelize. Default: 10.
       controller.operation.processors: 10
 
-      # How often ArgoCD polls Git for changes when no webhook event is received.
-      # Acts as a fallback reconciliation safety net. Default: 180s.
-      timeout.reconciliation: 180s
+      # Restore pre-9.0 behavior where ApplicationSets auto-sync by default.
+      # Chart 9.0 changed the default from 'sync' to '' (empty string).
+      applicationsetcontroller.policy: "sync"
 
     cm:
       # Enables SVG status badge endpoints (e.g. /api/badge?name=my-app).
@@ -84,6 +85,10 @@ argo-cd:
       # "annotation" is the modern recommended method — uses argocd.argoproj.io/tracking-id annotation
       # instead of a label, avoiding conflicts with label selectors used by other tools.
       application.resourceTrackingMethod: annotation
+
+      # How often ArgoCD polls Git for changes when no webhook event is received.
+      # Acts as a fallback reconciliation safety net. Default: 180s.
+      timeout.reconciliation: "180s"
 
     rbac:
       # Default role assigned to any authenticated user who doesn't match a specific rule.

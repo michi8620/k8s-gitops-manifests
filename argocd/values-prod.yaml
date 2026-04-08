@@ -35,5 +35,5 @@ argo-cd:
     enabled: true                                # HA Redis for production
 
   configs:
-    params:
-      timeout.reconciliation: 180s
+    cm:
+      timeout.reconciliation: "180s"

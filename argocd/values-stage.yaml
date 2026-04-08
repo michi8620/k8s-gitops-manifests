@@ -17,5 +17,5 @@ argo-cd:
     enabled: false
 
   configs:
-    params:
-      timeout.reconciliation: 120s
+    cm:
+      timeout.reconciliation: "120s"

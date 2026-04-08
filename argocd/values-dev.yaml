@@ -17,5 +17,5 @@ argo-cd:
     enabled: false
 
   configs:
-    params:
-      timeout.reconciliation: 60s               # Faster reconciliation in dev
+    cm:
+      timeout.reconciliation: "60s"               # Faster reconciliation in dev
