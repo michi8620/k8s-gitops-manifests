@@ -6,9 +6,9 @@ description: >
   that drive the entire GitOps workflow.
 type: application
 version: 1.0.0
-appVersion: "2.13.0"
+appVersion: "v3.3.5"
 
 dependencies:
   - name: argo-cd
-    version: "7.7.5"
+    version: "9.4.16" # upgrade to 9.4.16
     repository: https://argoproj.github.io/argo-helm
