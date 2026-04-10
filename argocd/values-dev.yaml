@@ -6,6 +6,8 @@ argo-cd:
       ingressClassName: traefik
       hostname: argocd.dev.example.com
       tls: true
+      annotations:
+        cert-manager.io/cluster-issuer: ca-issuer
 
   controller:
     replicas: 1
