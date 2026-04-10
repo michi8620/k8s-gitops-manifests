@@ -1,8 +1,8 @@
 cert-manager:
   installCRDs: true
   prometheus:
-    enabled: true
+    enabled: false
     servicemonitor:
-      enabled: true
+      enabled: false
   webhook:
     replicaCount: 1
