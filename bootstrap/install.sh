@@ -10,7 +10,7 @@ set -euo pipefail
 ###############################################################################
 
 NAMESPACE="argocd"
-ARGOCD_CHART_VERSION="7.7.5"
+ARGOCD_CHART_VERSION="9.4.16"
 REPO_URL="${1:?Usage: ./install.sh <git-repo-url> [target-revision] [environment]}"
 TARGET_REVISION="${2:-HEAD}"
 ENVIRONMENT="${3:-dev}"
@@ -61,6 +61,7 @@ spec:
     targetRevision: ${TARGET_REVISION}
     path: argocd
     helm:
+      releaseName: argocd
       valueFiles:
         - values.yaml
         - values-${ENVIRONMENT}.yaml

@@ -21,6 +21,7 @@ environments:
 ## ArgoCD Helm chart values (upstream chart key: argo-cd)
 ## ---------------------------------------------------------------------------
 argo-cd:
+  fullnameOverride: argocd
   global:
     logging:
       format: json
