@@ -10,12 +10,12 @@ environments:
   - env: dev
     cluster: https://kubernetes.default.svc    # In-cluster (ArgoCD's cluster)
     revision: HEAD
-  - env: stage
-    cluster: https://stage.k8s.example.com
-    revision: HEAD
-  - env: prod
-    cluster: https://prod.k8s.example.com
-    revision: main                              # Prod tracks stable branch
+  # - env: stage
+  #   cluster: https://stage.k8s.example.com
+  #   revision: HEAD
+  # - env: prod
+  #   cluster: https://prod.k8s.example.com
+  #   revision: main                              # Prod tracks stable branch
 
 ## ---------------------------------------------------------------------------
 ## ArgoCD Helm chart values (upstream chart key: argo-cd)
