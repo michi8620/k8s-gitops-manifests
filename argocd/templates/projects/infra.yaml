@@ -9,7 +9,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  description: Infrastructure components (ingress, certs, monitoring, secrets)
+  description: Infrastructure components (ingress, certs, kube-prometheus-stack, secrets)
 
   sourceRepos:
     - {{ .Values.global.repoURL | quote }}
@@ -17,7 +17,7 @@ spec:
   destinations:
     - namespace: cert-manager
       server: '*'
-    - namespace: monitoring
+    - namespace: kube-prometheus-stack
       server: '*'
     - namespace: external-secrets
       server: '*'
