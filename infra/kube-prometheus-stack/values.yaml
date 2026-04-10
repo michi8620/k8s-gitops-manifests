@@ -13,6 +13,17 @@ kube-prometheus-stack:
       dashboards:
         enabled: true
         searchNamespace: ALL
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: ca-issuer
+      hosts:
+        - grafana.example.com
+      tls:
+        - secretName: grafana-tls
+          hosts:
+            - grafana.example.com
 
   alertmanager:
     enabled: true
