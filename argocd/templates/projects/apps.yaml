@@ -13,7 +13,6 @@ spec:
 
   sourceRepos:
     - {{ .Values.global.repoURL | quote }}
-    - 'oci://ghcr.io/OWNER/helm-charts'
 
   destinations:
     - namespace: 'frontend'
